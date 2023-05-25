@@ -1,6 +1,6 @@
 // Initialiserer den aktuelle spiller ('X' starter)
 let currentPlayer = 'X';
-let aiDifficulty = 'medium';
+let aiDifficulty = 'hard';
 
 // Spillebrættet repræsenteret som en matrix
 let gameBoard = [
@@ -203,11 +203,11 @@ function getBestMove() {
     return bestMove;
 }
 
-function minimaxWithAlphaBetaPruning(board, alpha, beta, isMaximizingPlayer, depth) {
-    // Base cases: check if the game is over or reached the maximum depth
+function minimaxWithAlphaBetaPruning(board, depth, isMaximizingPlayer, alpha, beta) {
+    // Base cases: check if the game is over
     let result = checkResult(board);
-    if (result !== null || depth === 0) {
-        return score(result);
+    if (result !== null) {
+        return score(result, depth);
     }
 
     if (isMaximizingPlayer) {
@@ -216,12 +216,12 @@ function minimaxWithAlphaBetaPruning(board, alpha, beta, isMaximizingPlayer, dep
             for (let j = 0; j < 3; j++) {
                 if (board[i][j] === '') {
                     board[i][j] = '0';
-                    let score = minimaxWithAlphaBetaPruning(board, alpha, beta, false, depth - 1);
+                    let score = minimaxWithAlphaBetaPruning(board, depth + 1, false, alpha, beta);
                     board[i][j] = '';
                     maxScore = Math.max(maxScore, score);
                     alpha = Math.max(alpha, score);
                     if (beta <= alpha) {
-                        break; // Beta cutoff
+                        break;
                     }
                 }
             }
@@ -232,13 +232,13 @@ function minimaxWithAlphaBetaPruning(board, alpha, beta, isMaximizingPlayer, dep
         for (let i = 0; i < 3; i++) {
             for (let j = 0; j < 3; j++) {
                 if (board[i][j] === '') {
-                    board[i][j] = 'X'; // Assume human player is 'X'
-                    let score = minimaxWithAlphaBetaPruning(board, alpha, beta, true, depth - 1);
+                    board[i][j] = 'X';
+                    let score = minimaxWithAlphaBetaPruning(board, depth + 1, true, alpha, beta);
                     board[i][j] = '';
                     minScore = Math.min(minScore, score);
                     beta = Math.min(beta, score);
                     if (beta <= alpha) {
-                        break; // Alpha cutoff
+                        break;
                     }
                 }
             }
@@ -284,7 +284,7 @@ function minimaxWithDepthLimit(board, depthLimit, depth, isMaximizingPlayer) {
     }
 }
 
-function getBestMoveWithAlphaBetaPruning(difficulty) {
+function getBestMoveWithAlphaBetaPruning() {
     // AI player is always '0'
     let bestScore = -Infinity;
     let bestMove;
@@ -297,7 +297,7 @@ function getBestMoveWithAlphaBetaPruning(difficulty) {
                 gameBoard[i][j] = '0';
 
                 // Calculate the score for this move using the minimax algorithm with alpha-beta pruning
-                let score = minimaxWithAlphaBetaPruning(gameBoard, -Infinity, Infinity, false, difficulty);
+                let score = minimaxWithAlphaBetaPruning(gameBoard, 0, false, -Infinity, Infinity);
 
                 // Undo the move
                 gameBoard[i][j] = '';
