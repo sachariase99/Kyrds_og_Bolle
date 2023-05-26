@@ -1,6 +1,6 @@
 // Initialiserer den aktuelle spiller ('X' starter)
 let currentPlayer = 'X';
-let aiDifficulty = 'easy';
+let aiDifficulty = 'hard';
 
 // Spillebrættet repræsenteret som en matrix
 let gameBoard = [
